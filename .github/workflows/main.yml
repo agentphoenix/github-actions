@@ -1,0 +1,21 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: ohseemedia/laravel-ci:7.3
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts
+    - name: Configure Laravel
+      run: |
+        cp .env.example .env
+        php artisan cache:clear
+        php artisan config:clear
+        php artisan key:generate
+    - name: Run PHPUnit tests
+      run: ./vendor/bin/phpunit --coverage-text --colors=never
